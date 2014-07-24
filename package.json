@@ -1,0 +1,10 @@
+{
+  "name": "mobilemaps",
+  "version": "0.1.0",
+  "author": "Kevin.Fung",
+  "description": "NodeJS server that controls the map and interface for the new mobile product",
+  "dependencies": {
+    "express": "3.x",
+    "mongoose": "*"
+  }
+}
