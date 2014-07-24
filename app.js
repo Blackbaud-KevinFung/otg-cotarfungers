@@ -1,16 +1,9 @@
 var express = require('express')
+  , cors = require('cors')
   , app = express()
   , server = require('http').createServer(app)
   , mongoose = require('mongoose')
   , Schema = mongoose.Schema;
-
-
-var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-};
-
 
 
 mongoose.connect('mongodb://localhost/data/db');
@@ -19,13 +12,11 @@ server.listen(process.env.PORT || 3001);
 
 app.configure(function(){
 	app.set('port', process.env.PORT || 3001);
+  app.use(cors());
   app.use(express.bodyParser());
-	app.use(express.static(__dirname + '/public'));
-	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(app.router);
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  app.use(allowCrossDomain);
 });
 
 /*
@@ -40,6 +31,7 @@ app.get('/', function(req, res){
 });
 
 app.post('/api/saveMapLayer', api.saveMapLayer);
+app.get('/api/getMapLayersByFrId/:fr_id', api.getMapLayersByFrId);
 
 
 
