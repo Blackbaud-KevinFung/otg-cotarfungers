@@ -38,7 +38,7 @@
 		var loc = [];
 		var clicked = false;
 		var index = 0;
-		frid = '1010';
+		frid = '1000';
 		jQuery(document).ready(function() {
 
 	        //get map layers
@@ -112,7 +112,7 @@
 		var marker;
 		var startRoute = function() {
 			if(clicked == false) {
-				mocktravel = setInterval('travel()', 100);
+				mocktravel = setInterval('travel()', 500);
 				clicked = true;
 			}
 			
@@ -149,7 +149,7 @@
 				var location = loc[index];
 				var latitude = location[1];
 				var longitude = location[0];
-				// console.log("lat: " + latitude + " lon: " + longitude);
+				console.log("lat: " + latitude + " lon: " + longitude);
 				marker = new L.marker([latitude, longitude], {icon: myIcon}).addTo(map);
 				jQuery.ajax({
 		            type: "POST",
