@@ -94,6 +94,7 @@ exports.updateRouteMessage = function(req, res) {
 	console.log(req.body);
 
 	RouteMessage.update({ fr_id: req.body.fr_id, coordinates: req.body.coordinates }, { $set: { message: req.body.message }}).exec();
+}
 
 var MAX_DISTANCE = 0.5;
 exports.sendNotif = function(req, res) {
@@ -121,12 +122,14 @@ exports.sendNotif = function(req, res) {
                             },
                         },
                         headers: {
-                            "Authorization": "Bearer ya29.TQAyf4jqmDmnUhwAAABy_XCRvQ_0FjhcorEQDC_sg2ed3N1UV5cAT4enfDFuMQ"
+                            "Authorization": "Bearer ya29.TQDLr9rOh43rJRwAAAAti1PexBGDieafbIqMCmkTn3BkJXi3M-wuDlyOXB2jCg"
                         }
                     };
 
                     console.log("about to send request...!");
                     request(options, function(error, response, body) {
+                        console.log("body: " + body);
+                        console.log("response: " + response);
                         console.log("error: " + error);
                     });
                 } else {
