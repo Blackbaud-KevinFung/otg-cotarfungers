@@ -13,6 +13,7 @@ server.listen(process.env.PORT || 3001);
 app.configure(function(){
 	app.set('port', process.env.PORT || 3001);
   app.use(cors());
+  app.use(express.static(__dirname + '/public'));
   app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(app.router);

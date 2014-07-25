@@ -2,37 +2,149 @@
 	<head>
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+
+		<style>
+			#map {
+				height: 600px;
+				width: 960px;
+				margin: 0;
+			}
+
+			.popupTextInput {
+				width: 100%;
+			}
+
+			.popupTextInput {
+				width: 100%;
+				word-wrap: break-word;
+			}
+		</style>
 	</head>
 	<body>
 		<h1>
-			Hello World!
-			
+			Demo
 		</h1>
 
+
+		<div id="map"></div>
+		<div>
+			<button id="start" onClick="startRoute();">Start</button>
+			<button id="pause" onClick="pauseRoute();">Pause</button>
+		</div>
+
 		<script>
-		/*
-			jQuery.post('/api/nodifications', {
-				'cons_id': '1234',
-				'task_id': '5678',
-				'site_id': '1',
-				'title': 'Test',
-				'status': 'Completed',
-				'description': 'I Farted',
-				'origin_app': 'email',
-				'destination_url': 'url',
-				'date': '2/27/2014'
-			}, function (data, textStatus, jqXHR) {
-			    console.log('Post response:'); console.dir(data); console.log(textStatus); console.dir(jqXHR);
-			});
+		var loc = [];
+		var clicked = false;
+		var index = 0;
+		jQuery(document).ready(function() {
 
+	        //get map layers
+	        var geoJsonFeatures = [];
+	        var url = "http://cotar-linux:3001/api/getMapLayersByFrId/1021";
+	        // console.log(url);
+	        jQuery.ajax({
+	            url: url,
+	            success: function(response) {
+	                // console.log(response);
+	                var maxLen = 0;
+	                for(i = 0, len = response.length; i < len; i++) {
+	                    var segment = response[i];
+	                    segment.layer.options = {'clickable': true};
+	                    geoJsonFeatures.push(segment.layer);
+	                    if(segment.layer.type === 'LineString') {
+	                    	if(segment.layer.coordinates) {
+		                    	if(segment.layer.coordinates.length > maxLen) {
+		                    		maxLen = segment.layer.coordinates.length;
+		                    		loc = segment.layer.coordinates;
+		                    	}
+	                    	}
+	                    }
+	                }
+	                // console.log(loc);
+	                //console.log(geoJsonFeatures);
+	                L.geoJson(geoJsonFeatures,
+	                {
+	                    onEachFeature: function(feature, layer){
+	                        layer.on('click', function(e){
+	                            var lat = e.latlng.lat;
+	                            var lng = e.latlng.lng;
+	                            var myIcon = L.icon({
+	                                iconUrl: '/images/SendLiveMessageMapIcon.png',
+	                                iconSize: [22, 29],
+	                                iconAnchor: [10, 32],
+	                            });
+	                            L.marker([lat, lng], {icon: myIcon}).addTo(map);
+	                            console.log("Lat, Lon : " + lat + ", " + lng)
+	                        }
+	                     )}
+	                }
+	                ).addTo(map);
+	            },
+	            error: function(jqXHR,status, err) {
+	                console.log(jqXHR);
+	                console.log(status);
+	                console.log(err);
+	            }
+	        });
+		});
+		var map = L.map('map').setView([30.4,-97.72], 13);
 
-			//jQuery.get('/api/nodifications/', function (data, textStatus, jqXHR) {
-			    //console.log('Get response:');
-			    //console.dir(data);
-			    //console.log(textStatus);
-			    //console.dir(jqXHR);
-			//});
-		*/
+		L.tileLayer('http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', {
+	    	minZoom: 0,
+	    	maxZoom: 20,
+	    	attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+	    }).addTo(map);
+
+		var marker;
+		var startRoute = function() {
+			if(clicked == false) {
+				mocktravel = setInterval('travel()', 100);
+				clicked = true;
+			}
+			
+		}
+
+		var pauseRoute = function() {
+			if(clicked) {
+				clearInterval(mocktravel);
+				clicked = false;
+			}
+		} 
+
+		var geojsonMarkerOptions = {
+		    radius: 8,
+		    fillColor: "#ff7800",
+		    color: "#000",
+		    weight: 1,
+		    opacity: 1,
+		    fillOpacity: 0.8
+		};
+
+		var myIcon = L.icon({
+            iconUrl: 'LegoHead.png',
+            iconSize: [22, 29],
+            iconAnchor: [10, 32],
+        });
+        
+
+		var travel = function() {
+			if(index < loc.length) {
+				if(index > 0) {
+					map.removeLayer(marker);
+				}
+				var location = loc[index];
+				// marker = new L.circleMarker([location[1], location[0]], geojsonMarkerOptions).addTo(map);
+				marker = new L.marker([location[1], location[0]], {icon: myIcon}).addTo(map);
+				index++;
+			} else {
+				window.clearInterval(mocktravel);
+				index = 0;
+				clicked = false;
+			}
+		}
+
 		</script>
 	</body>
 </html>
