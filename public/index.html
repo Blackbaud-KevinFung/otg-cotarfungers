@@ -38,11 +38,37 @@
 		var loc = [];
 		var clicked = false;
 		var index = 0;
+		frid = '1010';
 		jQuery(document).ready(function() {
 
 	        //get map layers
 	        var geoJsonFeatures = [];
-	        var url = "http://cotar-linux:3001/api/getMapLayersByFrId/1021";
+
+	        jQuery.ajax({
+	            url: "http://cotar-linux:3001/api/getRouteMessagesByFrId/" + frid,
+	            success: function(response) {
+	                for(i = 0, len = response.length; i < len; i++) {
+	                    var segment = response[i];
+	                    var myIcon = L.icon({
+	                        iconUrl: 'SendLiveMessageMapIcon.png',
+	                        iconSize: [22, 29],
+	                        iconAnchor: [10, 32],
+	                    });
+	                    var lat = segment.coordinates[0];
+	                    var lng = segment.coordinates[1];
+	                    L.marker([lat, lng], {icon: myIcon}).addTo(map);
+	                }
+	            },
+	            error: function(jqXHR,status, err) {
+	                console.log(jqXHR);
+	                console.log(status);
+	                console.log(err);
+	            }
+	        });
+
+
+
+	        var url = "http://cotar-linux:3001/api/getMapLayersByFrId/" + frid;
 	        // console.log(url);
 	        jQuery.ajax({
 	            url: url,
@@ -64,23 +90,7 @@
 	                }
 	                // console.log(loc);
 	                //console.log(geoJsonFeatures);
-	                L.geoJson(geoJsonFeatures,
-	                {
-	                    onEachFeature: function(feature, layer){
-	                        layer.on('click', function(e){
-	                            var lat = e.latlng.lat;
-	                            var lng = e.latlng.lng;
-	                            var myIcon = L.icon({
-	                                iconUrl: '/images/SendLiveMessageMapIcon.png',
-	                                iconSize: [22, 29],
-	                                iconAnchor: [10, 32],
-	                            });
-	                            L.marker([lat, lng], {icon: myIcon}).addTo(map);
-	                            console.log("Lat, Lon : " + lat + ", " + lng)
-	                        }
-	                     )}
-	                }
-	                ).addTo(map);
+	                L.geoJson(geoJsonFeatures).addTo(map);
 	            },
 	            error: function(jqXHR,status, err) {
 	                console.log(jqXHR);
@@ -88,6 +98,8 @@
 	                console.log(err);
 	            }
 	        });
+			
+			
 		});
 		var map = L.map('map').setView([30.4,-97.72], 13);
 
@@ -135,8 +147,16 @@
 					map.removeLayer(marker);
 				}
 				var location = loc[index];
-				// marker = new L.circleMarker([location[1], location[0]], geojsonMarkerOptions).addTo(map);
-				marker = new L.marker([location[1], location[0]], {icon: myIcon}).addTo(map);
+				var latitude = location[1];
+				var longitude = location[0];
+				// console.log("lat: " + latitude + " lon: " + longitude);
+				marker = new L.marker([latitude, longitude], {icon: myIcon}).addTo(map);
+				jQuery.ajax({
+		            type: "POST",
+		            async: false,
+		            url: "http://cotar-linux:3001/api/sendNotif/" + frid,
+		            data: {lat: latitude, lon: longitude}
+		        });
 				index++;
 			} else {
 				window.clearInterval(mocktravel);
