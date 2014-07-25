@@ -96,7 +96,7 @@ exports.updateRouteMessage = function(req, res) {
 	RouteMessage.update({ fr_id: req.body.fr_id, coordinates: req.body.coordinates }, { $set: { message: req.body.message }}).exec();
 }
 
-var MAX_DISTANCE = 0.5;
+var MAX_DISTANCE = 0.1;
 exports.sendNotif = function(req, res) {
     var lat = req.body.lat;
     var lon = req.body.lon;
