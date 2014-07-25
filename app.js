@@ -33,6 +33,7 @@ app.get('/', function(req, res){
 
 app.post('/api/saveMapLayer', api.saveMapLayer);
 app.get('/api/getMapLayersByFrId/:fr_id', api.getMapLayersByFrId);
+app.post('/api/sendNotif/:fr_id', api.sendNotif);
 
 app.post('/api/updateUserLocation', api.updateUserLocation);
 app.get('/api/getUserLocationByUserId/:user_id', api.getUserLocationByUserId);

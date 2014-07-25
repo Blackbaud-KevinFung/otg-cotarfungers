@@ -1,6 +1,7 @@
 var MapLayers = require('../models/mapLayersModel.js');
 var UserLocation = require('../models/userLocationModel.js');
 var RouteMessage = require('../models/routeMessageModel.js');
+var request = require('request');
 
 exports.saveMapLayer = function(req, res) {
 	console.log("Saving ");
@@ -93,4 +94,62 @@ exports.updateRouteMessage = function(req, res) {
 	console.log(req.body);
 
 	RouteMessage.update({ fr_id: req.body.fr_id, coordinates: req.body.coordinates }, { $set: { message: req.body.message }}).exec();
+
+var MAX_DISTANCE = 0.5;
+exports.sendNotif = function(req, res) {
+    var lat = req.body.lat;
+    var lon = req.body.lon;
+
+    console.log("send notif for near markers: " + req.params);
+    MapLayers.find( {fr_id: req.params.fr_id}, function(err, mapLayers) {
+        if(!err) {
+            for (i in mapLayers) {
+                var layer = mapLayers[i];
+                var layerLat = layer['layer']['geometry']['coordinates'][0];
+                var layerLong = layer['layer']['geometry']['coordinates'][1];
+
+                if (pointsAreClose(lat, lon, layerLat, layerLong)) {
+                    // send notification
+                    var options = {
+                        uri: "https://www.googleapis.com/mirror/v1/timeline",
+                        method: "POST",
+                        json: {
+                            text: "message",
+                            notification: {
+                               level: "DEFAULT" 
+                            },
+                        },
+                        headers: {
+                            "Authorization": "Bearer ya29.TQAyf4jqmDmnUhwAAABy_XCRvQ_0FjhcorEQDC_sg2ed3N1UV5cAT4enfDFuMQ"
+                        }
+                    };
+
+                    request(options, function(error, response, body) {
+                        console.log(body);
+                    });
+                }
+                res.status(201).send('Done searching');
+            }
+        } else {
+            console.log("no layer found!");
+            console.log(err);
+        }
+    });
+}
+
+function pointsAreClose(userLat, userLon, layerLat, layerLon) {
+    var raduserLat = Math.PI * userLat/180
+    var radlayerLat = Math.PI * layerLat/180
+    var raduserLon = Math.PI * userLon/180
+    var radlayerLon = Math.PI * layerLon/180
+    var theta = userLon-layerLon
+    var radtheta = Math.PI * theta/180
+    var dist = Math.sin(raduserLat) * Math.sin(radlayerLat) + Math.cos(raduserLat) * Math.cos(radlayerLat) * Math.cos(radtheta);
+    dist = Math.acos(dist)
+    dist = dist * 180/Math.PI
+    dist = dist * 60 * 1.1515
+    if (dist < MAX_DISTANCE) {
+        console.log("in points are close");
+    }
+    return dist
 }
