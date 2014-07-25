@@ -36,5 +36,5 @@ app.get('/api/getMapLayersByFrId/:fr_id', api.getMapLayersByFrId);
 app.post('/api/updateUserLocation', api.updateUserLocation);
 app.get('/api/getUserLocationByUserId/:user_id', api.getUserLocationByUserId);
 
-
+app.post('/api/addRouteMessage', api.addRouteMessage);
 
