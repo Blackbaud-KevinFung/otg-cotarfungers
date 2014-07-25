@@ -31,3 +31,25 @@ exports.getMapLayersByFrId = function(req, res) {
 		}
 	});
 }
+
+
+exports.updateUserLocation = function(req, res) {
+	console.log("Saving ");
+	console.log(req.body);
+
+	UserLocation.update({ user_id: req.body.user_id }, { $set: { loc: req.body.loc }}).exec();
+}
+
+exports.getUserLocationByUserId = function(req, res) {
+	console.log("get all map layers for an user id: " + req.params.user_id);
+	UserLocation.find({user_id: req.params.user_id},function(err, userLoc) {
+		if(!err) {
+			console.log('Success!');
+			console.log(userLoc);
+			res.status(200).send(userLoc);
+		} else {
+			console.log("Error!!!");
+			console.log(err);
+		}
+	});
+}
