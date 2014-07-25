@@ -87,3 +87,10 @@ exports.addRouteMessage = function(req, res) {
 		}		
 	});
 }
+
+exports.updateRouteMessage = function(req, res) {
+	console.log("Updating routeMessage -----------------------");
+	console.log(req.body);
+
+	RouteMessage.update({ fr_id: req.body.fr_id, coordinates: req.body.coordinates }, { $set: { message: req.body.message }}).exec();
+}
