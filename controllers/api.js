@@ -102,10 +102,10 @@ exports.sendNotif = function(req, res) {
     var lon = req.body.lon;
 
     console.log("send notif for near markers: " + req.params);
-    RouteMessage.find( {fr_id: req.params.fr_id}, function(err, locations) {
+    RouteMessage.find( {fr_id: req.params.fr_id}, function(err, messages) {
         if(!err) {
-            for (i in locations) {
-                var layer = locations[i];
+            for (i in messages) {
+                var layer = messages[i];
                 console.log(layer);
                 var layerLat = layer['coordinates'][0];
                 var layerLong = layer['coordinates'][1];
@@ -122,12 +122,17 @@ exports.sendNotif = function(req, res) {
                             },
                         },
                         headers: {
-                            "Authorization": "Bearer ya29.TQDLr9rOh43rJRwAAAAti1PexBGDieafbIqMCmkTn3BkJXi3M-wuDlyOXB2jCg"
+                            "Authorization": "Bearer ya29.TQAe5zPiGZUM5BwAAABivRIDKtVsNh4quKqDMWV8mhfwLzlW6HWMRGl987iqfw"
                         }
                     };
 
                     console.log("about to send request...!");
                     request(options, function(error, response, body) {
+                        if (!error) {
+                            console.log(response)
+                            console.log("about to delete row...")
+                            RouteMessage.remove({"coordinates" : [layerLat, layerLong]}).exec();
+                        }
                         console.log("body: " + body);
                         console.log("response: " + response);
                         console.log("error: " + error);
