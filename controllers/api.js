@@ -101,12 +101,13 @@ exports.sendNotif = function(req, res) {
     var lon = req.body.lon;
 
     console.log("send notif for near markers: " + req.params);
-    MapLayers.find( {fr_id: req.params.fr_id}, function(err, mapLayers) {
+    RouteMessage.find( {fr_id: req.params.fr_id}, function(err, locations) {
         if(!err) {
-            for (i in mapLayers) {
-                var layer = mapLayers[i];
-                var layerLat = layer['layer']['geometry']['coordinates'][0];
-                var layerLong = layer['layer']['geometry']['coordinates'][1];
+            for (i in locations) {
+                var layer = locations[i];
+                console.log(layer);
+                var layerLat = layer['coordinates'][0];
+                var layerLong = layer['coordinates'][1];
 
                 if (pointsAreClose(lat, lon, layerLat, layerLong)) {
                     // send notification
@@ -114,7 +115,7 @@ exports.sendNotif = function(req, res) {
                         uri: "https://www.googleapis.com/mirror/v1/timeline",
                         method: "POST",
                         json: {
-                            text: "message",
+                            text: layer['message'],
                             notification: {
                                level: "DEFAULT" 
                             },
@@ -124,9 +125,12 @@ exports.sendNotif = function(req, res) {
                         }
                     };
 
+                    console.log("about to send request...!");
                     request(options, function(error, response, body) {
-                        console.log(body);
+                        console.log("error: " + error);
                     });
+                } else {
+                    console.log("aw");
                 }
                 res.status(201).send('Done searching');
             }
@@ -149,7 +153,10 @@ function pointsAreClose(userLat, userLon, layerLat, layerLon) {
     dist = dist * 180/Math.PI
     dist = dist * 60 * 1.1515
     if (dist < MAX_DISTANCE) {
-        console.log("in points are close");
+        console.log("OH SNAP POINTS ARE CLOSE DAWG");
+        return true
+    } else {
+        console.log("AW MAN POINTS ARE FAR");
+        return false
     }
-    return dist
 }
