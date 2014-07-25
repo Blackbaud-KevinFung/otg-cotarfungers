@@ -122,7 +122,7 @@ exports.sendNotif = function(req, res) {
                             },
                         },
                         headers: {
-                            "Authorization": "Bearer ya29.TQAe5zPiGZUM5BwAAABivRIDKtVsNh4quKqDMWV8mhfwLzlW6HWMRGl987iqfw"
+                            "Authorization": "Bearer ya29.TQDunqUhJtmmqBwAAACkkyUVvpj6L-635M8RBd-PGpS4hUdgkDIPp1IOuOK7WQ"
                         }
                     };
 
