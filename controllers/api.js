@@ -34,6 +34,19 @@ exports.getMapLayersByFrId = function(req, res) {
 	});
 }
 
+exports.getRouteMessagesByFrId = function(req, res) {
+	console.log("get all routeMessages for an fr id: " + req.params.fr_id);
+	RouteMessage.find({fr_id: req.params.fr_id},function(err, routeMessage) {
+		if(!err) {
+			console.log('Success!');
+			console.log(routeMessage);
+			res.status(200).send(routeMessage);
+		} else {
+			console.log("Error!!!");
+			console.log(err);
+		}
+	});
+}
 
 exports.updateUserLocation = function(req, res) {
 	console.log("Updating user location -----------------------");
@@ -62,10 +75,10 @@ exports.addRouteMessage = function(req, res) {
 	var routeMessage = new RouteMessage({
 		fr_id: req.body.fr_id,
 		message: req.body.message,
-		layer: req.body.layer
+		coordinates: req.body.coordinates
 	});
 
-	mapLayer.save(function(err) {
+	routeMessage.save(function(err) {
 		if(!err) {
 			res.status(201).send('Save Succesful');
 			console.log('Save Successful!');

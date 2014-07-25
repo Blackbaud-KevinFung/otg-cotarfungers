@@ -38,4 +38,5 @@ app.post('/api/updateUserLocation', api.updateUserLocation);
 app.get('/api/getUserLocationByUserId/:user_id', api.getUserLocationByUserId);
 
 app.post('/api/addRouteMessage', api.addRouteMessage);
+app.get('/api/getRouteMessagesByFrId/:fr_id', api.getRouteMessagesByFrId);
 
